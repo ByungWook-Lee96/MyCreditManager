@@ -39,78 +39,69 @@ func RemoveStudent(student: String){
 
 // 과목 & 성적 추가 함수
 func AddSubjectGrade(student: String, subject: String, grade: String){
-    // 키 하나씩 출력되는 for문
-    for key in studentName.keys{
-        // 키와 학생이름이 같으면
-        if key == student{
-            
-            let count = studentName[key]!.count  // optional을 지우기 위해서 count 상수에 넣음
-            // value에 해당하는 부분의 카운트
-            for i in 0..<count{
-                // 해당 키의 value와 subject가 같으면 grade를 업데이트
-                if studentName[key]?[i][0] == subject{
-                    studentName[key]?[i][1] = grade
-                    print(student + " 학생의 " + subject + " 과목이 " + grade + "로 변경되었습니다.")
-                    return
-                }
-            }
-            // 해당 키의 value가 없으면 subject와 grade 추가
-            studentName[student]!.append([subject, grade])
-            print(student + " 학생의 " + subject + " 과목이 " + grade + "로 추가되었습니다.")
+    
+    // studentName 딕셔너리에 학생이름 없는 것
+    if studentName[student] == nil{
+        print("입력이 잘못되었습니다. 다시 확인해주세요.")
+        return
+    }
+    
+    let count = studentName[student]!.count  // optional을 지우기 위해서 count 상수에 넣음
+    // value에 해당하는 부분의 카운트
+    for i in 0..<count{
+        // 해당 키의 value와 subject가 같으면 grade를 업데이트
+        if studentName[student]?[i][0] == subject{
+            studentName[student]?[i][1] = grade
+            print(student + " 학생의 " + subject + " 과목이 " + grade + "로 변경되었습니다.")
+            return
+        }
+    }
+    // 해당 키의 value가 없으면 subject와 grade 추가
+    studentName[student]!.append([subject, grade])
+    print(student + " 학생의 " + subject + " 과목이 " + grade + "로 추가되었습니다.")
+    return
+}
+
+// 성적 삭제
+func RemoveGrade(student: String, subject: String){
+    
+    let count = studentName[student]!.count // optional을 지우기 위해서 count 상수에 넣음
+    // value에 해당하는 부분의 카운트
+    for i in 0..<count{
+        // 해당 키의 value와 subject가 같으면 grade에 -1 출력 -> 수정이 필요할 수 있음
+        if studentName[student]?[i][0] == subject{
+            studentName[student]?.remove(at: i)
             return
         }
     }
     // studentName 딕셔너리에 학생이름 없는 것
     print("입력이 잘못되었습니다. 다시 확인해주세요.")
-}
-
-// 성적 삭제
-func RemoveGrade(student: String, subject: String){
-    // 키 하나씩 출력되는 for문
-    for key in studentName.keys{
-        // 키와 학생이름이 같으면
-        if key == student{
-            
-            let count = studentName[key]!.count // optional을 지우기 위해서 count 상수에 넣음
-            // value에 해당하는 부분의 카운트
-            for i in 0..<count{
-                // 해당 키의 value와 subject가 같으면 grade에 -1 출력 -> 수정이 필요할 수 있음
-                if studentName[key]?[i][0] == subject{
-                    studentName[key]?[i][1] = "-1"
-                    return
-                }
-            }
-            // studentName 딕셔너리에 학생이름 없는 것
-            print("입력이 잘못되었습니다. 다시 확인해주세요.")
-            return
-        }
-    }
+    return
+    
 }
 
 // 평점 보기
 func Average(student: String){
-    // 키 하나씩 출력되는 for문
-    for key in studentName.keys{
-        // 키와 학생이름이 같으면
-        if key == student{
-            
-            let count = studentName[key]!.count  // optional을 지우기 위해서 count 상수에 넣음
-            var sum: Double = 0  // 평점 총합을 구하기 위한 sum
-            print(student)
-            // value에 해당하는 부분의 카운트
-            for i in 0..<count{
-                // Calculate 함수에서 나온 결과가 -1이면 미출력
-                if Calculate(num: i, key: key) == -1{
-                    return
-                }else{
-                    print(studentName[key]![i][0] + " : " + studentName[key]![i][1])
-                    sum += Calculate(num: i, key: key)
-                }
-            }
-            print("평점 : \(sum/Double(count))")
-            return
+
+    let count = studentName[student]!.count  // optional을 지우기 위해서 count 상수에 넣음
+    var sum: Double = 0  // 평점 총합을 구하기 위한 sum
+    var validSubject = 0
+    print(student)
+    // value에 해당하는 부분의 카운트
+    for i in 0..<count{
+        // Calculate 함수에서 나온 결과가 -1이면 해당 과목만 미출력
+        if Calculate(num: i, key: student) == -1{
+            print(studentName[student]![i][0] + " : " + studentName[student]![i][1])
+            print(studentName[student]![i][1] + "는 잘못된 성적입니다. A+ ~ F 사이의 문자로 성적을 변경하세요.")
+        }else{
+            print(studentName[student]![i][0] + " : " + studentName[student]![i][1])
+            sum += Calculate(num: i, key: student)
+            validSubject += 1
         }
     }
+    print("평점 : \(sum/Double(validSubject))")
+    return
+
 }
 
 // 성적별 점수 계산 함수
@@ -136,7 +127,6 @@ func Calculate(num: Int, key: String) -> Double{
         return 0
     // 위에 문자가 아닌 경우는 무조건 미출력
     default:
-        print("잘못된 성적이 있습니다. 메뉴에서 P를 클릭하여 확인 후 4번을 클릭하여 A+ ~ F 사이의 문자로 성적을 변경하세요.")
         return -1
     }
 }
@@ -154,6 +144,7 @@ while exit{
     print("""
           원하는 기능을 입력해주세요
           1: 학생추가, 2: 학생삭제, 3: 성적추가(변경), 4: 성적삭제, 5: 평점보기, P: 전체 학생 확인, X: 종료
+          (단, 영어와 숫자만 입력 가능)
           """)
     
     let input = readLine()
@@ -177,7 +168,6 @@ while exit{
                 만약에 학생의 성적 중 해당 과목이 존재하면 기존 점수가 갱신됩니다.
                 """)
             let array = readLine()!.split(separator: " ").map { String($0) } // 3개 단어 입력 안한 경우 만들어야 함
-            print(array)
             let student = array[0]
             let subject = array[1]
             let grade = array[2]
