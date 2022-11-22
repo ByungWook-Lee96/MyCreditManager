@@ -85,7 +85,7 @@ func Average(student: String){
 
     let count = studentName[student]!.count  // optional을 지우기 위해서 count 상수에 넣음
     var sum: Double = 0  // 평점 총합을 구하기 위한 sum
-    var validSubject = 0
+    var validSubject: Double = 0
     print(student)
     // value에 해당하는 부분의 카운트
     for i in 0..<count{
@@ -99,7 +99,8 @@ func Average(student: String){
             validSubject += 1
         }
     }
-    print("평점 : \(sum/Double(validSubject))")
+    let avg = String(format: "%.2f", sum/validSubject)
+    print("평점 : \(avg)")
     return
 
 }
